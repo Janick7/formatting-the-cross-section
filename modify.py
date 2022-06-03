@@ -15,7 +15,6 @@ class Modify:
     def __init__(self):
         self.selTypes = {
             'area': self.areaFilt,
-            'all': self.allFilt,
             'layer': self.layerFilt,
             'text': self.textFilt,
             'line': self.lineFilt
@@ -27,11 +26,6 @@ class Modify:
 
     def areaFilt(self, s):
         points = [APoint(s.InsertionPoint[0], s.InsertionPoint[1])] if self.EntityNames.index(s.EntityName) else [APoint(s.Coordinates[i-1], co) for i, co in enumerate(s.Coordinates) if i % 2 != 0]
-        # if self.EntityNames.index(s.EntityName):
-        #     points = [APoint(s.InsertionPoint[0], s.InsertionPoint[1])]
-        # else:
-        #     points = [APoint(s.Coordinates[i-1], co) for i, co in enumerate(s.Coordinates) if i % 2 != 0]
-
         a = self.selection_data[3]
         b = self.selection_data[4]
         res = []
@@ -43,9 +37,6 @@ class Modify:
         else:
             return len(res) == len(points) # 'full'
 
-    def allFilt(self, s):
-        return True
-
     def layerFilt(self, s):
         return self.selection_data[2] == s.Layer
 
@@ -55,6 +46,6 @@ class Modify:
         elif s.EntityName == 'AcDbText':
             return self.selection_data[2] in s.TextString
 
-
     def lineFilt(self, s):
-        return s.EntityName == 'AcDbPolyline'
+        l = s.Length
+        return s.EntityName == 'AcDbPolyline' and l > self.selection_data[2]
